@@ -8,7 +8,7 @@ namespace ArgumentsParser
     /// <summary>
     /// Un processore di comando che esegue solo il log del comando.
     /// </summary>
-    public class CommandLog : Command
+    public class LogCommandHandler : CommandHandler
     {
         /// <summary>
         /// Il logger per l'output.
@@ -18,7 +18,7 @@ namespace ArgumentsParser
         /// Costruttore.
         /// </summary>
         /// <param name="logger">Il logger per l'output.</param>
-        public CommandLog(ILogger logger) { _logger = logger; }
+        public LogCommandHandler(ILogger logger) { _logger = logger; }
         /// <summary>
         /// Esegue il log del comando.
         /// </summary>

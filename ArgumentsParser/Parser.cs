@@ -5,21 +5,51 @@ using System.Text.RegularExpressions;
 
 namespace ArgumentsParser
 {
+    /// <summary>
+    /// Parser di riga di comando.
+    /// </summary>
     public class Parser
     {
+        /// <summary>
+        /// Pattern utilizzato per l'analisi del comando.
+        /// </summary>
+        /// <see cref="Regex"/>
         public string ArgumentPattern { get; set; } = @"-(?<command>\w+)(\s(?<param>[\w\d,;]+)?)?";
-
+        /// <summary>
+        /// Evento lanciato prima dell'esecuzione di un comando.
+        /// </summary>
         public event EventHandler<CommandExecutingEventArgs>? CommandExecuting;
+        /// <summary>
+        /// Evento lanciato dopo l'esecuzione di un comando.
+        /// </summary>
         public event EventHandler<CommandExecutedEventArgs>? CommandExecuted;
-
+        /// <summary>
+        /// Logger del parser.
+        /// </summary>
         private readonly ILogger? _logger;
-        private LinkedList<Command> Commands { get; set; } = new LinkedList<Command>();
-
+        /// <summary>
+        /// La catena dei comandi gestiti.
+        /// </summary>
+        private LinkedList<CommandHandler> Commands { get; set; } = new LinkedList<CommandHandler>();
+        /// <summary>
+        /// Costruttore.
+        /// </summary>
+        /// <param name="logger">Logger.</param>
         public Parser(ILogger? logger = null) { _logger = logger; }
-
-        public void AddCommand(Command command) { Commands.AddLast(command); }
-        public void RemoveCommand(Command command) { Commands.Remove(command); }
-
+        /// <summary>
+        /// Aggiunge un gestore di comando alla catena.
+        /// </summary>
+        /// <param name="commandHandler">Gestore del comando.</param>
+        public void AddCommand(CommandHandler commandHandler) { Commands.AddLast(commandHandler); }
+        /// <summary>
+        /// Rimuove un gestore di comando dalla catena.
+        /// </summary>
+        /// <param name="commandHandler">Gestore da rimuovere.</param>
+        public void RemoveCommand(CommandHandler commandHandler) { Commands.Remove(commandHandler); }
+        /// <summary>
+        /// Analizza la riga di comando e la gestisce.
+        /// </summary>
+        /// <param name="commandLine">Riga di comando.</param>
         public void ParseCommandLine(string commandLine)
         {
             var re = new Regex(ArgumentPattern, RegexOptions.Compiled);
@@ -27,6 +57,11 @@ namespace ArgumentsParser
                 Execute(m.Groups["command"].Value, m.Groups["param"].Value);
         }
 
+        /// <summary>
+        /// Esegue un comando.
+        /// </summary>
+        /// <param name="command">Comando da eseguire.</param>
+        /// <param name="args">Parametri del comando.</param>
         protected virtual void Execute(string command, string args)
         {
             var c = Commands.First;

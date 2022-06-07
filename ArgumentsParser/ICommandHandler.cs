@@ -7,7 +7,7 @@ namespace ArgumentsParser
     /// <summary>
     /// Definizione di un comando.
     /// </summary>
-    public interface ICommand
+    public interface ICommandHandler
     {
         /// <summary>
         /// Indica se la gestione è terminata.
