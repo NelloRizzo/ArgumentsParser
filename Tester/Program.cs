@@ -7,7 +7,7 @@ using var loggerFactory = LoggerFactory.Create(builder =>
 });
 var logger = loggerFactory.CreateLogger<Program>();
 var p = new Parser(logger) { Status = new CounterStatus() };
-p.AddCommand(new LogCommandHandler(logger)).AddCommand(new CountCommandHandler()).AddCommand(new CountCommandHandler()).AddCommand(new CountCommandHandler());
+p.AddCommand(new LogCommandHandler(logger)).AddCommand(new CountCommandHandler());
 p.CommandExecuting += (s, e) => Console.WriteLine($"CommandExecuting for command {e.CommandName} with arguments: {e.Arguments}");
 p.CommandExecuted += (s, e) => Console.WriteLine($"CommandExecuted for command {e.CommandName} with arguments: {e.Arguments}");
 
