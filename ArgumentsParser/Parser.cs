@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace ArgumentsParser
 {
@@ -60,6 +61,19 @@ namespace ArgumentsParser
             foreach (Match m in re.Matches(commandLine))
                 Execute(this, m.Groups["command"].Value, m.Groups["param"].Value);
         }
+        /// <summary>
+        /// Simulazione di processo asincrono.
+        /// </summary>
+        /// <param name="commandLine">Riga di comando.</param>
+        public async Task ParseCommandLineAsync(string commandLine)
+        {
+            var re = new Regex(ArgumentPattern, RegexOptions.Compiled);
+            foreach (Match m in re.Matches(commandLine))
+            {
+                Execute(this, m.Groups["command"].Value, m.Groups["param"].Value);
+                await Task.Yield();
+            }
+        }
 
         /// <summary>
         /// Esegue un comando.
@@ -84,6 +98,34 @@ namespace ArgumentsParser
                     CommandExecuted?.Invoke(this, new CommandExecutedEventArgs { Arguments = args, CommandName = command });
                     c = c?.Next;
                 }
+            } while (!c?.Value.Handled ?? false);
+            _logger?.LogTrace($"Executed {command} with {args}");
+        }
+
+        /// <summary>
+        /// Esegue un comando in modalità asincrona.
+        /// </summary>
+        /// <param name="command">Comando da eseguire.</param>
+        /// <param name="args">Parametri del comando.</param>
+        protected virtual async Task ExecuteAsync(Parser parser, string command, string args)
+        {
+            var c = Commands.First;
+            if (c == null) return;
+
+            _logger?.LogTrace($"Executing {command} with {args}");
+            do
+            {
+                var e = new CommandExecutingEventArgs { Arguments = args, CommandName = command };
+                CommandExecuting?.Invoke(this, e);
+                if (e.Cancel)
+                    c = null;
+                else
+                {
+                    c!.Value.Execute(command, args, Status);
+                    CommandExecuted?.Invoke(this, new CommandExecutedEventArgs { Arguments = args, CommandName = command });
+                    c = c?.Next;
+                }
+                await Task.Yield();
             } while (!c?.Value.Handled ?? false);
             _logger?.LogTrace($"Executed {command} with {args}");
         }

@@ -14,6 +14,8 @@ p.CommandExecuted += (s, e) => Console.WriteLine($"CommandExecuted for command {
 p.ParseCommandLine("-command1 arg1,arg2,arg3 -command2 prova arg1 -command3");
 Console.WriteLine($"Lo stato del parser è {p.Status}");
 
+p.ParseCommandLineAsync("-command1 arg1,arg2,arg3 -command2 prova arg1 -command3");
+Console.WriteLine("Fine");
 
 class CounterStatus : IParserStatus
 {
