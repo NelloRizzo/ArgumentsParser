@@ -5,10 +5,23 @@ using System.Text;
 
 namespace ArgumentsParser
 {
+    /// <summary>
+    /// Un processore di comando che esegue solo il log del comando.
+    /// </summary>
     public class CommandLog : Command
     {
+        /// <summary>
+        /// Il logger per l'output.
+        /// </summary>
         private readonly ILogger _logger;
+        /// <summary>
+        /// Costruttore.
+        /// </summary>
+        /// <param name="logger">Il logger per l'output.</param>
         public CommandLog(ILogger logger) { _logger = logger; }
+        /// <summary>
+        /// Esegue il log del comando.
+        /// </summary>
         public override void Execute(string command, string args) =>
             _logger.LogInformation($"Log for command <{command}> with arguments: ({args})");
     }
