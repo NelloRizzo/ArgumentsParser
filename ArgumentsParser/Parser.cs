@@ -11,6 +11,10 @@ namespace ArgumentsParser
     public class Parser
     {
         /// <summary>
+        /// Stato del parser per la condivisione di informazioni tra handlers.
+        /// </summary>
+        public IParserStatus? Status { get; set; }
+        /// <summary>
         /// Pattern utilizzato per l'analisi del comando.
         /// </summary>
         /// <see cref="Regex"/>
@@ -40,12 +44,12 @@ namespace ArgumentsParser
         /// Aggiunge un gestore di comando alla catena.
         /// </summary>
         /// <param name="commandHandler">Gestore del comando.</param>
-        public void AddCommand(CommandHandler commandHandler) { Commands.AddLast(commandHandler); }
+        public Parser AddCommand(CommandHandler commandHandler) { Commands.AddLast(commandHandler); return this; }
         /// <summary>
         /// Rimuove un gestore di comando dalla catena.
         /// </summary>
         /// <param name="commandHandler">Gestore da rimuovere.</param>
-        public void RemoveCommand(CommandHandler commandHandler) { Commands.Remove(commandHandler); }
+        public Parser RemoveCommand(CommandHandler commandHandler) { Commands.Remove(commandHandler); return this; }
         /// <summary>
         /// Analizza la riga di comando e la gestisce.
         /// </summary>
@@ -54,7 +58,7 @@ namespace ArgumentsParser
         {
             var re = new Regex(ArgumentPattern, RegexOptions.Compiled);
             foreach (Match m in re.Matches(commandLine))
-                Execute(m.Groups["command"].Value, m.Groups["param"].Value);
+                Execute(this, m.Groups["command"].Value, m.Groups["param"].Value);
         }
 
         /// <summary>
@@ -62,7 +66,7 @@ namespace ArgumentsParser
         /// </summary>
         /// <param name="command">Comando da eseguire.</param>
         /// <param name="args">Parametri del comando.</param>
-        protected virtual void Execute(string command, string args)
+        protected virtual void Execute(Parser parser, string command, string args)
         {
             var c = Commands.First;
             if (c == null) return;
@@ -76,7 +80,7 @@ namespace ArgumentsParser
                     c = null;
                 else
                 {
-                    c!.Value.Execute(command, args);
+                    c!.Value.Execute(command, args, Status);
                     CommandExecuted?.Invoke(this, new CommandExecutedEventArgs { Arguments = args, CommandName = command });
                     c = c?.Next;
                 }

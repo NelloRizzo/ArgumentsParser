@@ -22,7 +22,7 @@ namespace ArgumentsParser
         /// <summary>
         /// Esegue il log del comando.
         /// </summary>
-        public override void Execute(string command, string args) =>
+        public override void Execute(string command, string args, IParserStatus? status) =>
             _logger.LogInformation($"Log for command <{command}> with arguments: ({args})");
     }
 }

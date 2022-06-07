@@ -19,6 +19,7 @@ namespace ArgumentsParser
         /// </summary>
         /// <param name="command">Il comando da eseguire.</param>
         /// <param name="args">Gli argomenti passati al comando.</param>
-        public void Execute(string command, string args);
+        /// <param name="status">Lo stato del parser per la condivisione di informazioni tra handlers.</param>
+        public void Execute(string command, string args, IParserStatus? status);
     }
 }
